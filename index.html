@@ -1,41 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Business Card</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Card Sharing</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <div class="card">
-        <div class="card-header">
-            <h2>John Doe</h2>
-            <p>CEO & Founder</p>
-        </div>
-        <div class="card-body">
-            <p>Email: john.doe@email.com</p>
-            <p>Phone: 123-456-7890</p>
-            <p>Website: www.johndoe.com</p>
-        </div>
-        <div class="card-footer">
-            <button id="shareButton">Share This Card</button>
-        </div>
+  <div class="container">
+    <h1>Create Your Business Card</h1>
+    
+    <div id="card-editor">
+      <canvas id="card-canvas" width="400" height="250"></canvas>
+      <br>
+      <input type="text" id="name-input" placeholder="Name" />
+      <input type="text" id="email-input" placeholder="Email" />
+      <input type="text" id="phone-input" placeholder="Phone" />
+      <button onclick="updateCard()">Update Card</button>
     </div>
 
-    <!-- Location Filter Form -->
-    <div class="location-filter">
-        <h3>Filter by Location</h3>
-        <label for="city">City:</label>
-        <input type="text" id="city" placeholder="Enter city">
-        
-        <label for="state">State:</label>
-        <input type="text" id="state" placeholder="Enter state">
-        
-        <label for="country">Country:</label>
-        <input type="text" id="country" placeholder="Enter country">
+    <div id="payment-section" style="display: none;">
+      <h2>Payment for Card Sharing ($1)</h2>
+      <button onclick="processPayment()">Pay $1 & Share</button>
     </div>
 
-    <script src="script.js"></script>
+    <div id="ticket-section" style="display: none;">
+      <h2>Your Ticket</h2>
+      <p>Thank you for sharing your card! Your ticket number: <span id="ticket-number"></span></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
