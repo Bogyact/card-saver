@@ -40,3 +40,22 @@ button:hover {
 h1 {
   color: #333;
 }
+
+#shared-cards-section {
+  margin-top: 30px;
+  border-top: 2px solid #ccc;
+  padding-top: 20px;
+}
+
+.card-preview {
+  border: 1px solid #ddd;
+  margin: 10px;
+  padding: 10px;
+  width: 300px;
+  display: inline-block;
+  text-align: left;
+}
+
+.card-preview canvas {
+  border: 1px solid #ddd;
+}
