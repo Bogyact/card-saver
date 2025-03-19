@@ -1,37 +1,68 @@
-document.getElementById("shareButton").addEventListener("click", function() {
-    // Simulate sharing by creating a shareable link
-    const shareLink = "https://www.johndoe.com/business-card"; // Example link for sharing
-    
-    // Collect the user's selected location (city, state, country)
-    const selectedCity = document.getElementById("city").value;
-    const selectedState = document.getElementById("state").value;
-    const selectedCountry = document.getElementById("country").value;
-    
-    // Simulate a list of users (replace with your database query in a real application)
-    const users = [
-        { name: "Jane", email: "jane@example.com", city: "New York", state: "NY", country: "USA" },
-        { name: "Mike", email: "mike@example.com", city: "Los Angeles", state: "CA", country: "USA" },
-        { name: "Sarah", email: "sarah@example.com", city: "New York", state: "NY", country: "USA" },
-        { name: "Tom", email: "tom@example.com", city: "London", state: "", country: "UK" }
-    ];
+const canvas = document.getElementById('card-canvas');
+const ctx = canvas.getContext('2d');
 
-    // Filter users based on the selected location (city, state, country)
-    const filteredUsers = users.filter(user => {
-        return (user.city === selectedCity || !selectedCity) &&
-               (user.state === selectedState || !selectedState) &&
-               (user.country === selectedCountry || !selectedCountry);
-    });
+let cardData = {
+  name: '',
+  email: '',
+  phone: ''
+};
 
-    // Construct the email share functionality for each matching user
-    filteredUsers.forEach(user => {
-        const subject = "Check out my Digital Business Card!";
-        const body = `Hi ${user.name},\n\nI wanted to share my business card with you. Here it is: ${shareLink}`;
-        const mailtoLink = `mailto:${user.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        
-        // Open the email client for sharing (one at a time)
-        window.location.href = mailtoLink;
-    });
+// Function to update the card design on canvas
+function updateCard() {
+  // Get user inputs
+  cardData.name = document.getElementById('name-input').value;
+  cardData.email = document.getElementById('email-input').value;
+  cardData.phone = document.getElementById('phone-input').value;
 
-    // Simulate sending a ticket (This could be integrated with a backend later)
-    alert("Thank you for sharing the card! You've earned a ticket.");
-});
+  // Clear the canvas and redraw the card
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#f1f1f1';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#333';
+  ctx.font = '20px Arial';
+  ctx.fillText('Name: ' + cardData.name, 20, 30);
+  ctx.fillText('Email: ' + cardData.email, 20, 70);
+  ctx.fillText('Phone: ' + cardData.phone, 20, 110);
+
+  // Show payment section after card creation
+  document.getElementById('payment-section').style.display = 'block';
+}
+
+// Simulate payment processing and card sharing
+function processPayment() {
+  // For the sake of this demo, we'll skip real payment processing.
+  alert("Payment of $1 processed!");
+
+  // Simulate random user selection for card sharing
+  const randomUser = getRandomUser();
+  console.log(`Card sent to: ${randomUser.name}`);
+
+  // Generate a ticket for the sender
+  generateTicket();
+}
+
+// Generate a ticket number
+function generateTicket() {
+  const ticketNumber = Math.floor(Math.random() * 1000000); // Random 6-digit ticket
+  document.getElementById('ticket-number').textContent = ticketNumber;
+  
+  // Hide the payment section and show the ticket section
+  document.getElementById('payment-section').style.display = 'none';
+  document.getElementById('ticket-section').style.display = 'block';
+}
+
+// Simulated list of random users (in a real app, this would be dynamic)
+const users = [
+  { name: 'John Doe', location: 'New York, USA' },
+  { name: 'Jane Smith', location: 'Los Angeles, USA' },
+  { name: 'Maria Garcia', location: 'Madrid, Spain' },
+  { name: 'Li Wei', location: 'Beijing, China' }
+];
+
+// Randomly select a user from the list
+function getRandomUser() {
+  const randomIndex = Math.floor(Math.random() * users.length);
+  return users[randomIndex];
+}
