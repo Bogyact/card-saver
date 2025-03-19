@@ -1,99 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Business Card Sharing</title>
-  <style>
-    /* You can add some styling for your business card here */
-    .card {
-      width: 300px;
-      height: 180px;
-      background-color: #f0f0f0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editable Business Card</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .business-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+        }
+        .business-card h2, .business-card p {
+            margin: 10px 0;
+        }
+        .editable {
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            width: 100%;
+            text-align: center;
+        }
+        .editable:focus {
+            outline: none;
+            border-color: #5a9cff;
+        }
+        .card-footer {
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1>Your Business Card</h1>
-    <p>Name: John Doe</p>
-    <p>Role: Software Engineer</p>
-    <p>Email: john.doe@example.com</p>
-    <!-- Button to share the card -->
-    <button id="shareButton">Share My Card</button>
-  </div>
+<div class="business-card">
+    <h2 contenteditable="true" class="editable" id="name">John Doe</h2>
+    <p contenteditable="true" class="editable" id="title">Web Developer</p>
+    <p contenteditable="true" class="editable" id="email">john.doe@example.com</p>
+    <p contenteditable="true" class="editable" id="phone">+123 456 7890</p>
+    <div class="card-footer">
+        <button onclick="saveCard()">Save Details</button>
+    </div>
+</div>
 
-  <script>
-    // JavaScript to get user location and share card with a random client
-    document.getElementById("shareButton").addEventListener("click", function() {
-      // Fetch user location using GeoJS API
-      fetch('https://get.geojs.io/v1/ip/geo.json')
-        .then(response => response.json())
-        .then(data => {
-          let city = data.city;
-          let state = data.state;
-          let country = data.country;
-          
-          // Call the function to share the card based on location
-          shareCardBasedOnLocation(city, state, country);
-        })
-        .catch(error => console.log("Error fetching location: ", error));
-    });
+<script>
+    function saveCard() {
+        const name = document.getElementById('name').innerText;
+        const title = document.getElementById('title').innerText;
+        const email = document.getElementById('email').innerText;
+        const phone = document.getElementById('phone').innerText;
+        
+        const cardDetails = {
+            name: name,
+            title: title,
+            email: email,
+            phone: phone
+        };
 
-    function shareCardBasedOnLocation(city, state, country) {
-      // Example of predefined clients based on location
-      const clients = {
-        "USA": [
-          { city: "New York", url: "https://ny-client.com" },
-          { city: "Los Angeles", url: "https://la-client.com" }
-        ],
-        "Canada": [
-          { city: "Toronto", url: "https://toronto-client.com" },
-          { city: "Vancouver", url: "https://vancouver-client.com" }
-        ]
-      };
-
-      let selectedClient = null;
-
-      // Check for country and city match
-      if (clients[country]) {
-        // Filter the clients based on the city (if available)
-        const filteredClients = clients[country].filter(client => client.city === city);
-
-        // If we have a match, select a random client from the filtered list
-        if (filteredClients.length > 0) {
-          selectedClient = filteredClients[Math.floor(Math.random() * filteredClients.length)];
-        } else {
-          // Fallback: Random client from the country
-          selectedClient = clients[country][Math.floor(Math.random() * clients[country].length)];
-        }
-      }
-
-      if (selectedClient) {
-        console.log(`Card will be shared with: ${selectedClient.url}`);
-        window.location.href = selectedClient.url;  // Share the card with the selected client
-      } else {
-        console.log("No client found for this location.");
-      }
+        // Save the card details to the local storage or send them to a server (e.g., using fetch or AJAX)
+        localStorage.setItem('businessCard', JSON.stringify(cardDetails));
+        
+        alert('Business card details saved!');
     }
-  </script>
+
+    // Load saved card details (if any)
+    window.onload = function() {
+        const savedCard = localStorage.getItem('businessCard');
+        if (savedCard) {
+            const cardDetails = JSON.parse(savedCard);
+            document.getElementById('name').innerText = cardDetails.name;
+            document.getElementById('title').innerText = cardDetails.title;
+            document.getElementById('email').innerText = cardDetails.email;
+            document.getElementById('phone').innerText = cardDetails.phone;
+        }
+    }
+</script>
 
 </body>
 </html>
