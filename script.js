@@ -1,30 +1,20 @@
-document.getElementById('profile-form').addEventListener('submit', function(event) {
-  event.preventDefault();
+document.getElementById("shareButton").addEventListener("click", function() {
+    // Simulate sharing by creating a shareable link
+    const shareLink = "https://www.johndoe.com/business-card"; // Example link for sharing
+    
+    // Construct the email share functionality
+    const subject = "Check out my Digital Business Card!";
+    const body = "Hi, I wanted to share my business card with you. Here it is: " + shareLink;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Open the email client for sharing
+    window.location.href = mailtoLink;
 
-  // Get user input
-  const name = document.getElementById('name').value;
-  const title = document.getElementById('title').value;
-  const company = document.getElementById('company').value;
-  const city = document.getElementById('city').value;
-  const state = document.getElementById('state').value;
-  const country = document.getElementById('country').value;
+    // Simulate sending a ticket (This could be integrated with a backend later)
+    let ticketCount = localStorage.getItem("tickets") || 0;
+    ticketCount++;
+    localStorage.setItem("tickets", ticketCount);
 
-  // Set the card content
-  document.getElementById('card-name').textContent = name;
-  document.getElementById('card-title').textContent = title;
-  document.getElementById('card-company').textContent = company;
-  document.getElementById('card-location').textContent = `${city}, ${state}, ${country}`;
-
-  // Show the card preview
-  document.getElementById('card-preview').style.display = 'block';
-});
-
-document.getElementById('send-card').addEventListener('click', function() {
-  // Simulate sending card to a random user
-  document.getElementById('notification').style.display = 'block';
-
-  // Hide the notification after 2 seconds
-  setTimeout(function() {
-    document.getElementById('notification').style.display = 'none';
-  }, 2000);
+    // Alert the user about the ticket earned
+    alert(`Thank you for sharing the card! You've earned a ticket. Total tickets: ${ticketCount}`);
 });
