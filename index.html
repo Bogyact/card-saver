@@ -1,28 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Business Card</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Card Sharing</title>
+  <style>
+    /* You can add some styling for your business card here */
+    .card {
+      width: 300px;
+      height: 180px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="card-header">
-            <h2>John Doe</h2>
-            <p>CEO & Founder</p>
-        </div>
-        <div class="card-body">
-            <p>Email: john.doe@email.com</p>
-            <p>Phone: 123-456-7890</p>
-            <p>Website: www.johndoe.com</p>
-        </div>
-        <div class="card-footer">
-            <button id="shareButton">Share This Card</button>
-        </div>
-    </div>
+  <div class="card">
+    <h1>Your Business Card</h1>
+    <p>Name: John Doe</p>
+    <p>Role: Software Engineer</p>
+    <p>Email: john.doe@example.com</p>
+    <!-- Button to share the card -->
+    <button id="shareButton">Share My Card</button>
+  </div>
 
-    <script src="script.js"></script>
+  <script>
+    // JavaScript to get user location and share card with a random client
+    document.getElementById("shareButton").addEventListener("click", function() {
+      // Fetch user location using GeoJS API
+      fetch('https://get.geojs.io/v1/ip/geo.json')
+        .then(response => response.json())
+        .then(data => {
+          let city = data.city;
+          let state = data.state;
+          let country = data.country;
+          
+          // Call the function to share the card based on location
+          shareCardBasedOnLocation(city, state, country);
+        })
+        .catch(error => console.log("Error fetching location: ", error));
+    });
+
+    function shareCardBasedOnLocation(city, state, country) {
+      // Example of predefined clients based on location
+      const clients = {
+        "USA": [
+          { city: "New York", url: "https://ny-client.com" },
+          { city: "Los Angeles", url: "https://la-client.com" }
+        ],
+        "Canada": [
+          { city: "Toronto", url: "https://toronto-client.com" },
+          { city: "Vancouver", url: "https://vancouver-client.com" }
+        ]
+      };
+
+      let selectedClient = null;
+
+      // Check for country and city match
+      if (clients[country]) {
+        // Filter the clients based on the city (if available)
+        const filteredClients = clients[country].filter(client => client.city === city);
+
+        // If we have a match, select a random client from the filtered list
+        if (filteredClients.length > 0) {
+          selectedClient = filteredClients[Math.floor(Math.random() * filteredClients.length)];
+        } else {
+          // Fallback: Random client from the country
+          selectedClient = clients[country][Math.floor(Math.random() * clients[country].length)];
+        }
+      }
+
+      if (selectedClient) {
+        console.log(`Card will be shared with: ${selectedClient.url}`);
+        window.location.href = selectedClient.url;  // Share the card with the selected client
+      } else {
+        console.log("No client found for this location.");
+      }
+    }
+  </script>
+
 </body>
 </html>
