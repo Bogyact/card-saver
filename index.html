@@ -3,35 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Business Card Sharing</title>
+  <title>Business Card Generator</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <div class="container">
-    <h1>Create Your Business Card</h1>
-    
-    <div id="card-editor">
-      <canvas id="card-canvas" width="400" height="250"></canvas>
-      <br>
-      <input type="text" id="name-input" placeholder="Name" />
-      <input type="text" id="email-input" placeholder="Email" />
-      <input type="text" id="phone-input" placeholder="Phone" />
-      <button onclick="updateCard()">Update Card</button>
+    <h1>Business Card Generator</h1>
+    <div id="profile-form">
+      <h2>Create Your Profile</h2>
+      <form id="profile-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" placeholder="Your name">
+        
+        <label for="title">Title:</label>
+        <input type="text" id="title" placeholder="Your job title">
+        
+        <label for="company">Company:</label>
+        <input type="text" id="company" placeholder="Your company name">
+        
+        <label for="city">City:</label>
+        <input type="text" id="city" placeholder="Your city">
+        
+        <label for="state">State:</label>
+        <input type="text" id="state" placeholder="Your state">
+        
+        <label for="country">Country:</label>
+        <input type="text" id="country" placeholder="Your country">
+        
+        <button type="submit">Generate Card</button>
+      </form>
     </div>
 
-    <div id="payment-section" style="display: none;">
-      <h2>Payment for Card Sharing ($1)</h2>
-      <button onclick="processPayment()">Pay $1 & Share</button>
+    <div id="card-preview" class="card-preview">
+      <h2>Your Business Card</h2>
+      <div class="card" id="card">
+        <div class="card-content">
+          <div class="name" id="card-name"></div>
+          <div class="title" id="card-title"></div>
+          <div class="company" id="card-company"></div>
+          <div class="location" id="card-location"></div>
+        </div>
+      </div>
+      <button id="send-card">Send to Random User</button>
     </div>
 
-    <div id="ticket-section" style="display: none;">
-      <h2>Your Ticket</h2>
-      <p>Thank you for sharing your card! Your ticket number: <span id="ticket-number"></span></p>
-    </div>
-
-    <div id="shared-cards-section" style="display: none;">
-      <h2>Cards Sent to Other Users</h2>
-      <div id="shared-cards-list"></div>
+    <div id="notification" class="notification">
+      <p>Card sent to a random user!</p>
     </div>
   </div>
 
