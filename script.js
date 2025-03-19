@@ -1,123 +1,95 @@
-const canvas = document.getElementById('card-canvas');
-const ctx = canvas.getContext('2d');
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const Stripe = require('stripe');
+const stripe = Stripe('YOUR_STRIPE_SECRET_KEY'); // Replace with your Stripe Secret Key
 
-let cardData = {
-  name: '',
-  email: '',
-  phone: ''
-};
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-let sharedCards = [];  // This will hold shared card data
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
 
-// Function to update the card design on canvas
-function updateCard() {
-  // Get user inputs
-  cardData.name = document.getElementById('name-input').value;
-  cardData.email = document.getElementById('email-input').value;
-  cardData.phone = document.getElementById('phone-input').value;
+// MongoDB connection (replace with your connection string)
+mongoose.connect('mongodb://localhost/business-cards', { useNewUrlParser: true, useUnifiedTopology: true });
 
-  // Clear the canvas and redraw the card
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Define User and Card models
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  location: String, // City, State, or Country
+  tickets: { type: Number, default: 0 },
+});
 
-  ctx.fillStyle = '#f1f1f1';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+const CardSchema = new mongoose.Schema({
+  userId: mongoose.Schema.Types.ObjectId,
+  name: String,
+  phone: String,
+  email: String,
+  location: String,
+  graphic: String, // Base64 encoded image of the card
+  dateSent: { type: Date, default: Date.now },
+});
 
-  ctx.fillStyle = '#333';
-  ctx.font = '20px Arial';
-  ctx.fillText('Name: ' + cardData.name, 20, 30);
-  ctx.fillText('Email: ' + cardData.email, 20, 70);
-  ctx.fillText('Phone: ' + cardData.phone, 20, 110);
+const User = mongoose.model('User', UserSchema);
+const Card = mongoose.model('Card', CardSchema);
 
-  // Show payment section after card creation
-  document.getElementById('payment-section').style.display = 'block';
-}
+// Route to create a new user
+app.post('/api/users', async (req, res) => {
+  const { name, email, location } = req.body;
+  const user = new User({ name, email, location });
+  await user.save();
+  res.status(201).json(user);
+});
 
-// Simulate payment processing and card sharing
-function processPayment() {
-  // For the sake of this demo, we'll skip real payment processing.
-  alert("Payment of $1 processed!");
+// Route to send a business card and charge $1
+app.post('/api/sendCard', async (req, res) => {
+  const { cardId, userId } = req.body;
 
-  // Simulate random user selection for card sharing
-  const randomUser = getRandomUser();
-  console.log(`Card sent to: ${randomUser.name}`);
+  // Find the card and user
+  const card = await Card.findById(cardId);
+  const user = await User.findById(userId);
 
-  // Save the card to the shared cards list
-  saveSharedCard(randomUser);
+  // Handle Stripe payment (charge $1)
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 100, // $1 in cents
+      currency: 'usd',
+      payment_method: 'pm_card_visa', // Use actual payment method ID from frontend
+      confirmation_method: 'manual',
+      confirm: true,
+    });
 
-  // Generate a ticket for the sender
-  generateTicket();
-}
+    if (paymentIntent.status === 'succeeded') {
+      // Randomly select a user to receive the $1
+      const randomUser = await User.aggregate([{ $sample: { size: 1 } }]);
 
-// Generate a ticket number
-function generateTicket() {
-  const ticketNumber = Math.floor(Math.random() * 1000000); // Random 6-digit ticket
-  document.getElementById('ticket-number').textContent = ticketNumber;
-  
-  // Hide the payment section and show the ticket section
-  document.getElementById('payment-section').style.display = 'none';
-  document.getElementById('ticket-section').style.display = 'block';
-  
-  // Show the shared cards section
-  document.getElementById('shared-cards-section').style.display = 'block';
-}
+      // Issue a ticket to the sender
+      user.tickets += 1;
+      await user.save();
 
-// Save the card to the shared cards list
-function saveSharedCard(user) {
-  const sharedCard = {
-    name: cardData.name,
-    email: cardData.email,
-    phone: cardData.phone,
-    sentTo: user.name,
-    location: user.location
-  };
+      // Create a new card entry in the database
+      const newCard = new Card({
+        userId: user._id,
+        name: card.name,
+        phone: card.phone,
+        email: card.email,
+        location: card.location,
+        graphic: card.graphic,
+      });
+      await newCard.save();
 
-  sharedCards.push(sharedCard);
+      res.status(200).json({ success: true, ticket: user.tickets });
+    } else {
+      res.status(400).json({ success: false, message: 'Payment failed' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-  // Display the card in the shared cards list
-  displaySharedCards();
-}
-
-// Display all shared cards
-function displaySharedCards() {
-  const sharedCardsList = document.getElementById('shared-cards-list');
-  sharedCardsList.innerHTML = '';  // Clear the list before re-rendering
-
-  sharedCards.forEach(card => {
-    const cardElement = document.createElement('div');
-    cardElement.classList.add('card-preview');
-
-    // Create a canvas element for the shared card
-    const cardCanvas = document.createElement('canvas');
-    const cardCtx = cardCanvas.getContext('2d');
-    cardCanvas.width = 400;
-    cardCanvas.height = 250;
-
-    cardCtx.fillStyle = '#f1f1f1';
-    cardCtx.fillRect(0, 0, cardCanvas.width, cardCanvas.height);
-
-    cardCtx.fillStyle = '#333';
-    cardCtx.font = '20px Arial';
-    cardCtx.fillText('Name: ' + card.name, 20, 30);
-    cardCtx.fillText('Email: ' + card.email, 20, 70);
-    cardCtx.fillText('Phone: ' + card.phone, 20, 110);
-
-    cardElement.appendChild(cardCanvas);
-    cardElement.innerHTML += `<p>Sent to: ${card.sentTo} (${card.location})</p>`;
-    
-    sharedCardsList.appendChild(cardElement);
-  });
-}
-
-// Simulated list of random users (in a real app, this would be dynamic)
-const users = [
-  { name: 'John Doe', location: 'New York, USA' },
-  { name: 'Jane Smith', location: 'Los Angeles, USA' },
-  { name: 'Maria Garcia', location: 'Madrid, Spain' },
-  { name: 'Li Wei', location: 'Beijing, China' }
-];
-
-// Randomly select a user from the list
-function getRandomUser() {
-  const randomIndex = Math.floor(Math.random() * users.length);
-  return users[randomIndex];
-}
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
