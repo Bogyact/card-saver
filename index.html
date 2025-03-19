@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editable Business Card</title>
+    <title>Editable Business Card with Share</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,6 +41,13 @@
             font-size: 14px;
             color: #888;
         }
+        #location {
+            margin-top: 10px;
+            padding: 5px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -50,8 +57,12 @@
     <p contenteditable="true" class="editable" id="title">Web Developer</p>
     <p contenteditable="true" class="editable" id="email">john.doe@example.com</p>
     <p contenteditable="true" class="editable" id="phone">+123 456 7890</p>
+
+    <input type="text" id="location" placeholder="Enter your city, state, or country" />
+
     <div class="card-footer">
         <button onclick="saveCard()">Save Details</button>
+        <button onclick="shareCard()">Share to Random User</button>
     </div>
 </div>
 
@@ -69,10 +80,51 @@
             phone: phone
         };
 
-        // Save the card details to the local storage or send them to a server (e.g., using fetch or AJAX)
+        // Save the card details to localStorage (could be replaced with server storage)
         localStorage.setItem('businessCard', JSON.stringify(cardDetails));
-        
         alert('Business card details saved!');
+    }
+
+    function shareCard() {
+        const location = document.getElementById('location').value.trim();
+        if (!location) {
+            alert("Please enter a valid city, state, or country.");
+            return;
+        }
+
+        // Generate the card details
+        const name = document.getElementById('name').innerText;
+        const title = document.getElementById('title').innerText;
+        const email = document.getElementById('email').innerText;
+        const phone = document.getElementById('phone').innerText;
+
+        const cardDetails = {
+            name: name,
+            title: title,
+            email: email,
+            phone: phone,
+            location: location
+        };
+
+        // Call your server to share the card to a random person
+        fetch('/share-card', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cardDetails),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Card shared successfully with a random person in your location!");
+            } else {
+                alert("Failed to share the card.");
+            }
+        })
+        .catch(error => {
+            alert("Error: " + error);
+        });
     }
 
     // Load saved card details (if any)
