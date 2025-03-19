@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Business Card Sharing</title>
   <style>
-    /* You can add some styling for your business card here */
     .card {
       width: 300px;
       height: 180px;
@@ -36,7 +35,6 @@
     <p>Name: John Doe</p>
     <p>Role: Software Engineer</p>
     <p>Email: john.doe@example.com</p>
-    <!-- Button to share the card -->
     <button id="shareButton">Share My Card</button>
   </div>
 
@@ -62,33 +60,38 @@
       const clients = {
         "USA": [
           { city: "New York", url: "https://ny-client.com" },
-          { city: "Los Angeles", url: "https://la-client.com" }
+          { city: "Los Angeles", url: "https://la-client.com" },
+          { city: "Chicago", url: "https://chicago-client.com" }
         ],
         "Canada": [
           { city: "Toronto", url: "https://toronto-client.com" },
           { city: "Vancouver", url: "https://vancouver-client.com" }
-        ]
+        ],
+        // More clients can be added here
       };
 
       let selectedClient = null;
 
-      // Check for country and city match
+      // Check if there are clients for the user's country
       if (clients[country]) {
-        // Filter the clients based on the city (if available)
+        // Filter clients by city if available
         const filteredClients = clients[country].filter(client => client.city === city);
 
-        // If we have a match, select a random client from the filtered list
+        // If we find a match for the city, randomly select from the filtered list
         if (filteredClients.length > 0) {
           selectedClient = filteredClients[Math.floor(Math.random() * filteredClients.length)];
         } else {
-          // Fallback: Random client from the country
+          // If no match for the city, select a random client from the country
           selectedClient = clients[country][Math.floor(Math.random() * clients[country].length)];
         }
+      } else {
+        console.log(`No clients found for the country: ${country}`);
       }
 
+      // If a client is selected, share the card by redirecting
       if (selectedClient) {
         console.log(`Card will be shared with: ${selectedClient.url}`);
-        window.location.href = selectedClient.url;  // Share the card with the selected client
+        window.location.href = selectedClient.url;  // Redirect user to the selected client's website
       } else {
         console.log("No client found for this location.");
       }
