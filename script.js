@@ -5,7 +5,11 @@ const ctx = canvas.getContext('2d');
 const nameInput = document.getElementById('name');
 const companyInput = document.getElementById('company');
 const phoneInput = document.getElementById('phone');
+const cityInput = document.getElementById('city');
+const countryInput = document.getElementById('country');
 const downloadBtn = document.getElementById('download');
+const sendCardBtn = document.getElementById('sendCard');
+const userList = document.getElementById('userList');
 
 // تحديث بطاقة العمل بناءً على المدخلات
 function updateCard() {
@@ -40,10 +44,46 @@ downloadBtn.addEventListener('click', () => {
   a.click();
 });
 
+// إرسال البطاقة للمستخدمين القريبين
+sendCardBtn.addEventListener('click', () => {
+  const city = cityInput.value;
+  const country = countryInput.value;
+
+  if (city && country) {
+    // هنا يمكن أن يتم إرسال البطاقة للمستخدمين القريبين في قاعدة البيانات (تحتاج إلى خادم)
+    fetchNearbyUsers(city, country);
+  } else {
+    alert("من فضلك أدخل المدينة والبلد.");
+  }
+});
+
+// دالة لجلب المستخدمين القريبين من قاعدة البيانات (افتراضيًا)
+function fetchNearbyUsers(city, country) {
+  // هذا مثال على كيفية جلب البيانات من الخادم، سنستخدم بيانات ثابتة هنا.
+  const users = [
+    { name: 'أحمد', city: 'القاهرة', country: 'مصر' },
+    { name: 'مريم', city: 'القاهرة', country: 'مصر' },
+    { name: 'يوسف', city: 'الإسكندرية', country: 'مصر' }
+  ];
+
+  // تصفية المستخدمين بناءً على المدينة والبلد
+  const nearbyUsers = users.filter(user => user.city === city && user.country === country);
+
+  // عرض المستخدمين القريبين
+  userList.innerHTML = '';
+  nearbyUsers.forEach(user => {
+    const li = document.createElement('li');
+    li.textContent = `${user.name} - ${user.city}, ${user.country}`;
+    userList.appendChild(li);
+  });
+}
+
 // إضافة أحداث الإدخال لتحديث التصميم
 nameInput.addEventListener('input', updateCard);
 companyInput.addEventListener('input', updateCard);
 phoneInput.addEventListener('input', updateCard);
+cityInput.addEventListener('input', updateCard);
+countryInput.addEventListener('input', updateCard);
 
 // تحديث البطاقة عند تحميل الصفحة
 updateCard();
