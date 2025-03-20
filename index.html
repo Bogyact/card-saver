@@ -1,47 +1,42 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تصميم بطاقة عمل وتبادلها</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Digital Business Card</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>صمم بطاقة عملك وتبادلها</h1>
-    
-    <!-- أدوات التخصيص -->
-    <div class="controls">
-      <label for="name">اسمك:</label>
-      <input type="text" id="name" placeholder="اسمك هنا">
+    <header>
+        <h1>Create Your Digital Business Card</h1>
+    </header>
 
-      <label for="company">اسم الشركة:</label>
-      <input type="text" id="company" placeholder="اسم الشركة">
+    <main>
+        <form id="businessCardForm">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" required>
+            
+            <label for="jobTitle">Job Title:</label>
+            <input type="text" id="jobTitle" name="jobTitle" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
 
-      <label for="phone">رقم الهاتف:</label>
-      <input type="text" id="phone" placeholder="رقم الهاتف">
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone" required>
 
-      <!-- حقول الموقع الجغرافي -->
-      <label for="city">المدينة:</label>
-      <input type="text" id="city" placeholder="المدينة">
+            <label for="company">Company:</label>
+            <input type="text" id="company" name="company" required>
 
-      <label for="country">البلد:</label>
-      <input type="text" id="country" placeholder="البلد">
+            <label for="uploadLogo">Upload Logo:</label>
+            <input type="file" id="uploadLogo" name="logo">
+            
+            <button type="submit">Create Business Card</button>
+        </form>
+    </main>
 
-      <button id="download">تحميل البطاقة</button>
-      <button id="sendCard">إرسال البطاقة إلى الآخرين</button>
-    </div>
-
-    <!-- Canvas لتصميم البطاقة -->
-    <canvas id="cardCanvas" width="500" height="300"></canvas>
-
-    <!-- قائمة المستخدمين القريبين -->
-    <div id="nearbyUsers">
-      <h2>المستخدمين القريبين</h2>
-      <ul id="userList"></ul>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <footer>
+        <p>© 2025 Your Website Name</p>
+    </footer>
 </body>
 </html>
