@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تصميم بطاقة عمل</title>
+  <title>تصميم بطاقة عمل وتبادلها</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <h1>صمم بطاقة عملك</h1>
+    <h1>صمم بطاقة عملك وتبادلها</h1>
     
     <!-- أدوات التخصيص -->
     <div class="controls">
@@ -21,11 +21,25 @@
       <label for="phone">رقم الهاتف:</label>
       <input type="text" id="phone" placeholder="رقم الهاتف">
 
+      <!-- حقول الموقع الجغرافي -->
+      <label for="city">المدينة:</label>
+      <input type="text" id="city" placeholder="المدينة">
+
+      <label for="country">البلد:</label>
+      <input type="text" id="country" placeholder="البلد">
+
       <button id="download">تحميل البطاقة</button>
+      <button id="sendCard">إرسال البطاقة إلى الآخرين</button>
     </div>
 
     <!-- Canvas لتصميم البطاقة -->
     <canvas id="cardCanvas" width="500" height="300"></canvas>
+
+    <!-- قائمة المستخدمين القريبين -->
+    <div id="nearbyUsers">
+      <h2>المستخدمين القريبين</h2>
+      <ul id="userList"></ul>
+    </div>
   </div>
 
   <script src="script.js"></script>
