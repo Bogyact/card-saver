@@ -1,89 +1,66 @@
-const canvas = document.getElementById('cardCanvas');
-const ctx = canvas.getContext('2d');
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const stripe = require('stripe')('your_stripe_secret_key');
 
-// الحصول على العناصر المدخلات
-const nameInput = document.getElementById('name');
-const companyInput = document.getElementById('company');
-const phoneInput = document.getElementById('phone');
-const cityInput = document.getElementById('city');
-const countryInput = document.getElementById('country');
-const downloadBtn = document.getElementById('download');
-const sendCardBtn = document.getElementById('sendCard');
-const userList = document.getElementById('userList');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// تحديث بطاقة العمل بناءً على المدخلات
-function updateCard() {
-  const name = nameInput.value || 'اسمك هنا';
-  const company = companyInput.value || 'اسم الشركة';
-  const phone = phoneInput.value || 'رقم الهاتف';
+mongoose.connect('mongodb://localhost:27017/businesscards', { useNewUrlParser: true, useUnifiedTopology: true });
 
-  // مسح محتويات الكانفاس
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // رسم خلفية البطاقة
-  ctx.fillStyle = '#f4f4f4';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // إعداد الخطوط
-  ctx.font = '18px Arial';
-  ctx.fillStyle = '#333';
-
-  // رسم النصوص على البطاقة
-  ctx.fillText(company, 20, 40);  // اسم الشركة
-  ctx.font = '16px Arial';
-  ctx.fillText(name, 20, 80);      // اسم الشخص
-  ctx.fillText(phone, 20, 120);    // رقم الهاتف
-}
-
-// تحميل البطاقة كصورة
-downloadBtn.addEventListener('click', () => {
-  const dataURL = canvas.toDataURL('image/png');
-  const a = document.createElement('a');
-  a.href = dataURL;
-  a.download = 'business-card.png';
-  a.click();
+// Simple User and Card Schema
+const userSchema = new mongoose.Schema({
+  email: String,
+  password: String, // You should hash this in real applications
 });
 
-// إرسال البطاقة للمستخدمين القريبين
-sendCardBtn.addEventListener('click', () => {
-  const city = cityInput.value;
-  const country = countryInput.value;
-
-  if (city && country) {
-    // هنا يمكن أن يتم إرسال البطاقة للمستخدمين القريبين في قاعدة البيانات (تحتاج إلى خادم)
-    fetchNearbyUsers(city, country);
-  } else {
-    alert("من فضلك أدخل المدينة والبلد.");
-  }
+const businessCardSchema = new mongoose.Schema({
+  userId: String,
+  fullName: String,
+  jobTitle: String,
+  email: String,
+  phone: String,
+  company: String,
+  logoUrl: String,
+  price: Number, // For selling the card
 });
 
-// دالة لجلب المستخدمين القريبين من قاعدة البيانات (افتراضيًا)
-function fetchNearbyUsers(city, country) {
-  // هذا مثال على كيفية جلب البيانات من الخادم، سنستخدم بيانات ثابتة هنا.
-  const users = [
-    { name: 'أحمد', city: 'القاهرة', country: 'مصر' },
-    { name: 'مريم', city: 'القاهرة', country: 'مصر' },
-    { name: 'يوسف', city: 'الإسكندرية', country: 'مصر' }
-  ];
+const User = mongoose.model('User', userSchema);
+const BusinessCard = mongoose.model('BusinessCard', businessCardSchema);
 
-  // تصفية المستخدمين بناءً على المدينة والبلد
-  const nearbyUsers = users.filter(user => user.city === city && user.country === country);
+app.post('/create-card', (req, res) => {
+  const { fullName, jobTitle, email, phone, company, logoUrl, price, userId } = req.body;
+  
+  const newCard = new BusinessCard({ fullName, jobTitle, email, phone, company, logoUrl, price, userId });
+  newCard.save()
+    .then(() => res.status(200).json({ message: 'Card created successfully!' }))
+    .catch((err) => res.status(500).json({ message: 'Error creating card', error: err }));
+});
 
-  // عرض المستخدمين القريبين
-  userList.innerHTML = '';
-  nearbyUsers.forEach(user => {
-    const li = document.createElement('li');
-    li.textContent = `${user.name} - ${user.city}, ${user.country}`;
-    userList.appendChild(li);
-  });
-}
+app.post('/pay-for-card', (req, res) => {
+  const { cardId, userId } = req.body;
+  
+  // Implement Stripe payment here
+  stripe.paymentIntents.create({
+    amount: 100, // Amount in cents, e.g. $1 = 100 cents
+    currency: 'usd',
+    payment_method: req.body.paymentMethodId,
+    confirm: true,
+  })
+    .then(() => {
+      BusinessCard.findById(cardId).then((card) => {
+        if (card) {
+          // After successful payment, send the business card info to the user
+          res.status(200).json({ message: 'Payment successful! Here is your card.', card });
+        } else {
+          res.status(404).json({ message: 'Card not found.' });
+        }
+      });
+    })
+    .catch((err) => res.status(500).json({ message: 'Payment failed', error: err }));
+});
 
-// إضافة أحداث الإدخال لتحديث التصميم
-nameInput.addEventListener('input', updateCard);
-companyInput.addEventListener('input', updateCard);
-phoneInput.addEventListener('input', updateCard);
-cityInput.addEventListener('input', updateCard);
-countryInput.addEventListener('input', updateCard);
-
-// تحديث البطاقة عند تحميل الصفحة
-updateCard();
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
