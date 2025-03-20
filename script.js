@@ -1,40 +1,49 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+const canvas = document.getElementById('cardCanvas');
+const ctx = canvas.getContext('2d');
 
-// Simulated database of users (this would normally be a real database)
-const users = [
-    { id: 1, name: "Alice", location: "New York" },
-    { id: 2, name: "Bob", location: "California" },
-    { id: 3, name: "Charlie", location: "New York" },
-    { id: 4, name: "Dave", location: "California" },
-    { id: 5, name: "Eve", location: "Chicago" },
-];
+// الحصول على العناصر المدخلات
+const nameInput = document.getElementById('name');
+const companyInput = document.getElementById('company');
+const phoneInput = document.getElementById('phone');
+const downloadBtn = document.getElementById('download');
 
-// Middleware to parse JSON body
-app.use(express.json());
+// تحديث بطاقة العمل بناءً على المدخلات
+function updateCard() {
+  const name = nameInput.value || 'اسمك هنا';
+  const company = companyInput.value || 'اسم الشركة';
+  const phone = phoneInput.value || 'رقم الهاتف';
 
-// API endpoint to share the business card
-app.post('/share-card', (req, res) => {
-    const { name, title, email, phone, location } = req.body;
+  // مسح محتويات الكانفاس
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Find users with matching location
-    const matchingUsers = users.filter(user => user.location.toLowerCase() === location.toLowerCase());
+  // رسم خلفية البطاقة
+  ctx.fillStyle = '#f4f4f4';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    if (matchingUsers.length === 0) {
-        return res.status(404).json({ success: false, message: 'No matching users found in this location.' });
-    }
+  // إعداد الخطوط
+  ctx.font = '18px Arial';
+  ctx.fillStyle = '#333';
 
-    // Randomly select a user to send the card to
-    const randomUser = matchingUsers[Math.floor(Math.random() * matchingUsers.length)];
+  // رسم النصوص على البطاقة
+  ctx.fillText(company, 20, 40);  // اسم الشركة
+  ctx.font = '16px Arial';
+  ctx.fillText(name, 20, 80);      // اسم الشخص
+  ctx.fillText(phone, 20, 120);    // رقم الهاتف
+}
 
-    // Simulate sending the card to the random user
-    console.log(`Shared business card with ${randomUser.name} (${randomUser.location})`);
-    
-    // Respond to the front-end
-    res.json({ success: true, message: `Card shared with ${randomUser.name}` });
+// تحميل البطاقة كصورة
+downloadBtn.addEventListener('click', () => {
+  const dataURL = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = dataURL;
+  a.download = 'business-card.png';
+  a.click();
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+// إضافة أحداث الإدخال لتحديث التصميم
+nameInput.addEventListener('input', updateCard);
+companyInput.addEventListener('input', updateCard);
+phoneInput.addEventListener('input', updateCard);
+
+// تحديث البطاقة عند تحميل الصفحة
+updateCard();
