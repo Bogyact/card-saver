@@ -1,144 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editable Business Card with Share</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .business-card {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            padding: 20px;
-            text-align: center;
-        }
-        .business-card h2, .business-card p {
-            margin: 10px 0;
-        }
-        .editable {
-            border: 1px solid #ccc;
-            padding: 5px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            width: 100%;
-            text-align: center;
-        }
-        .editable:focus {
-            outline: none;
-            border-color: #5a9cff;
-        }
-        .card-footer {
-            font-size: 14px;
-            color: #888;
-        }
-        #location {
-            margin-top: 10px;
-            padding: 5px;
-            width: 100%;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تصميم بطاقة عمل</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="container">
+    <h1>صمم بطاقة عملك</h1>
+    
+    <!-- أدوات التخصيص -->
+    <div class="controls">
+      <label for="name">اسمك:</label>
+      <input type="text" id="name" placeholder="اسمك هنا">
 
-<div class="business-card">
-    <h2 contenteditable="true" class="editable" id="name">John Doe</h2>
-    <p contenteditable="true" class="editable" id="title">Web Developer</p>
-    <p contenteditable="true" class="editable" id="email">john.doe@example.com</p>
-    <p contenteditable="true" class="editable" id="phone">+123 456 7890</p>
+      <label for="company">اسم الشركة:</label>
+      <input type="text" id="company" placeholder="اسم الشركة">
 
-    <input type="text" id="location" placeholder="Enter your city, state, or country" />
+      <label for="phone">رقم الهاتف:</label>
+      <input type="text" id="phone" placeholder="رقم الهاتف">
 
-    <div class="card-footer">
-        <button onclick="saveCard()">Save Details</button>
-        <button onclick="shareCard()">Share to Random User</button>
+      <button id="download">تحميل البطاقة</button>
     </div>
-</div>
 
-<script>
-    function saveCard() {
-        const name = document.getElementById('name').innerText;
-        const title = document.getElementById('title').innerText;
-        const email = document.getElementById('email').innerText;
-        const phone = document.getElementById('phone').innerText;
-        
-        const cardDetails = {
-            name: name,
-            title: title,
-            email: email,
-            phone: phone
-        };
+    <!-- Canvas لتصميم البطاقة -->
+    <canvas id="cardCanvas" width="500" height="300"></canvas>
+  </div>
 
-        // Save the card details to localStorage (could be replaced with server storage)
-        localStorage.setItem('businessCard', JSON.stringify(cardDetails));
-        alert('Business card details saved!');
-    }
-
-    function shareCard() {
-        const location = document.getElementById('location').value.trim();
-        if (!location) {
-            alert("Please enter a valid city, state, or country.");
-            return;
-        }
-
-        // Generate the card details
-        const name = document.getElementById('name').innerText;
-        const title = document.getElementById('title').innerText;
-        const email = document.getElementById('email').innerText;
-        const phone = document.getElementById('phone').innerText;
-
-        const cardDetails = {
-            name: name,
-            title: title,
-            email: email,
-            phone: phone,
-            location: location
-        };
-
-        // Call your server to share the card to a random person
-        fetch('/share-card', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(cardDetails),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("Card shared successfully with a random person in your location!");
-            } else {
-                alert("Failed to share the card.");
-            }
-        })
-        .catch(error => {
-            alert("Error: " + error);
-        });
-    }
-
-    // Load saved card details (if any)
-    window.onload = function() {
-        const savedCard = localStorage.getItem('businessCard');
-        if (savedCard) {
-            const cardDetails = JSON.parse(savedCard);
-            document.getElementById('name').innerText = cardDetails.name;
-            document.getElementById('title').innerText = cardDetails.title;
-            document.getElementById('email').innerText = cardDetails.email;
-            document.getElementById('phone').innerText = cardDetails.phone;
-        }
-    }
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
