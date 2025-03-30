@@ -48,6 +48,9 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        .pay-button {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -64,6 +67,16 @@
         <p id="cardEmail">Your Email</p>
         <p id="cardPhone">Your Phone</p>
         <p id="cardDescription">Card Description</p>
+    </div>
+
+    <!-- Pay $1 Button -->
+    <div class="pay-button">
+        <form action="https://www.paypal.com/donate" method="post" target="_blank">
+            <input type="hidden" name="business" value="your-paypal-email@example.com">
+            <input type="hidden" name="amount" value="1.00">
+            <input type="hidden" name="currency_code" value="USD">
+            <input type="submit" value="Pay $1" style="background-color: #0070ba; color: white; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px;">
+        </form>
     </div>
 
     <script>
