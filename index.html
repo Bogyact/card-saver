@@ -13,7 +13,7 @@
         }
         .card {
             width: 400px;
-            height: 220px;
+            height: 250px;
             border-radius: 15px;
             padding: 20px;
             background: linear-gradient(135deg, #007bff, #00d4ff);
@@ -56,12 +56,14 @@
     <input type="text" id="title" placeholder="Your Title" oninput="updateCard()">
     <input type="text" id="email" placeholder="Your Email" oninput="updateCard()">
     <input type="text" id="phone" placeholder="Your Phone" oninput="updateCard()">
+    <input type="text" id="description" placeholder="Card Description" oninput="updateCard()">
     
     <div class="card" id="businessCard">
         <h3 id="cardName">Your Name</h3>
         <p id="cardTitle">Your Title</p>
         <p id="cardEmail">Your Email</p>
         <p id="cardPhone">Your Phone</p>
+        <p id="cardDescription">Card Description</p>
     </div>
 
     <script>
@@ -70,6 +72,7 @@
             document.getElementById("cardTitle").textContent = document.getElementById("title").value || "Your Title";
             document.getElementById("cardEmail").textContent = document.getElementById("email").value || "Your Email";
             document.getElementById("cardPhone").textContent = document.getElementById("phone").value || "Your Phone";
+            document.getElementById("cardDescription").textContent = document.getElementById("description").value || "Card Description";
         }
     </script>
 </body>
