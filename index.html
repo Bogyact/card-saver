@@ -69,7 +69,7 @@
         <p id="cardDescription">Card Description</p>
     </div>
 
-    <!-- Pay $1 Button with Visible Email Input -->
+    <!-- Pay $25 Button with Visible Email Input -->
     <div class="pay-button">
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" onsubmit="return setPayPalEmail()">
             <label for="paypalEmail">Enter Your PayPal Email:</label>
@@ -81,7 +81,7 @@
             <input type="hidden" name="amount" value="1.00">
             <input type="hidden" name="currency_code" value="USD">
             
-            <input type="submit" value="Pay $1" style="background-color: #0070ba; color: white; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px;">
+            <input type="submit" value="Pay $25" style="background-color: #0070ba; color: white; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px;">
         </form>
     </div>
 
@@ -101,7 +101,7 @@
                 return false;
             }
             // Set the PayPal email dynamically
-            document.getElementById("businessEmail").value = email;
+            document.getElementById("PersonalEmail").value = email;
             return true; // Continue submitting the form
         }
     </script>
