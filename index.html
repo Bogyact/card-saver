@@ -13,7 +13,8 @@
         }
         .card {
             width: 400px;
-            height: 250px;
+            height: auto;
+            min-height: 250px;
             border-radius: 15px;
             padding: 20px;
             background: linear-gradient(135deg, #007bff, #00d4ff);
@@ -51,16 +52,28 @@
         .pay-button {
             margin-top: 20px;
         }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h2>Graphical Business Card Generator</h2>
+
+    <!-- Input Fields -->
     <input type="text" id="name" placeholder="Your Name" oninput="updateCard()">
     <input type="text" id="title" placeholder="Your Title" oninput="updateCard()">
     <input type="text" id="email" placeholder="Your Email" oninput="updateCard()">
     <input type="text" id="phone" placeholder="Your Phone" oninput="updateCard()">
     <input type="text" id="description" placeholder="Card Description" oninput="updateCard()">
     
+    <!-- Business Card -->
     <div class="card" id="businessCard">
         <h3 id="cardName">Your Name</h3>
         <p id="cardTitle">Your Title</p>
@@ -69,7 +82,13 @@
         <p id="cardDescription">Card Description</p>
     </div>
 
-    <!-- Pay $25 Button with Visible Email Input -->
+    <!-- Share Card -->
+    <div style="margin-top: 20px;">
+        <button onclick="generateShareLink()">Share This Card</button>
+        <p id="shareLinkDisplay" style="margin-top: 10px;"></p>
+    </div>
+
+    <!-- PayPal Payment -->
     <div class="pay-button">
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" onsubmit="return setPayPalEmail()">
             <label for="paypalEmail">Enter Your PayPal Email:</label>
@@ -85,6 +104,7 @@
         </form>
     </div>
 
+    <!-- JavaScript -->
     <script>
         function updateCard() {
             document.getElementById("cardName").textContent = document.getElementById("name").value || "Your Name";
@@ -100,10 +120,54 @@
                 alert("Please enter your PayPal email.");
                 return false;
             }
-            // Set the PayPal email dynamically
             document.getElementById("businessEmail").value = email;
-            return true; // Continue submitting the form
+            return true;
         }
+
+        function generateShareLink() {
+            const name = encodeURIComponent(document.getElementById("name").value);
+            const title = encodeURIComponent(document.getElementById("title").value);
+            const email = encodeURIComponent(document.getElementById("email").value);
+            const phone = encodeURIComponent(document.getElementById("phone").value);
+            const description = encodeURIComponent(document.getElementById("description").value);
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                const url = `${window.location.origin}${window.location.pathname}?name=${name}&title=${title}&email=${email}&phone=${phone}&description=${description}&lat=${lat}&lon=${lon}`;
+
+                document.getElementById("shareLinkDisplay").innerHTML = `
+                    <strong>Share this link:</strong><br>
+                    <a href="${url}" target="_blank">${url}</a>
+                `;
+            }, function(error) {
+                const url = `${window.location.origin}${window.location.pathname}?name=${name}&title=${title}&email=${email}&phone=${phone}&description=${description}`;
+
+                document.getElementById("shareLinkDisplay").innerHTML = `
+                    <strong>Share this link:</strong><br>
+                    <a href="${url}" target="_blank">${url}</a>
+                `;
+            });
+        }
+
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('name')) document.getElementById("name").value = decodeURIComponent(params.get('name'));
+            if (params.has('title')) document.getElementById("title").value = decodeURIComponent(params.get('title'));
+            if (params.has('email')) document.getElementById("email").value = decodeURIComponent(params.get('email'));
+            if (params.has('phone')) document.getElementById("phone").value = decodeURIComponent(params.get('phone'));
+            if (params.has('description')) document.getElementById("description").value = decodeURIComponent(params.get('description'));
+
+            updateCard();
+
+            if (params.has('lat') && params.has('lon')) {
+                const loc = `Shared from location: ${params.get('lat')}, ${params.get('lon')}`;
+                const locEl = document.createElement('p');
+                locEl.textContent = loc;
+                document.getElementById("businessCard").appendChild(locEl);
+            }
+        };
     </script>
 </body>
 </html>
