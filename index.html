@@ -13,6 +13,7 @@
         }
         .card {
             width: 400px;
+            height: auto;
             min-height: 250px;
             border-radius: 15px;
             padding: 20px;
@@ -63,17 +64,15 @@
     </style>
 </head>
 <body>
-    <div id="mainEditor">
-        <h2>Graphical Business Card Generator</h2>
+    <h2>Graphical Business Card Generator</h2>
 
-        <!-- Input Fields -->
-        <input type="text" id="name" placeholder="Your Name" oninput="updateCard()">
-        <input type="text" id="title" placeholder="Your Title" oninput="updateCard()">
-        <input type="text" id="email" placeholder="Your Email" oninput="updateCard()">
-        <input type="text" id="phone" placeholder="Your Phone" oninput="updateCard()">
-        <input type="text" id="description" placeholder="Card Description" oninput="updateCard()">
-    </div>
-
+    <!-- Input Fields -->
+    <input type="text" id="name" placeholder="Your Name" oninput="updateCard()">
+    <input type="text" id="title" placeholder="Your Title" oninput="updateCard()">
+    <input type="text" id="email" placeholder="Your Email" oninput="updateCard()">
+    <input type="text" id="phone" placeholder="Your Phone" oninput="updateCard()">
+    <input type="text" id="description" placeholder="Card Description" oninput="updateCard()">
+    
     <!-- Business Card -->
     <div class="card" id="businessCard">
         <h3 id="cardName">Your Name</h3>
@@ -83,14 +82,14 @@
         <p id="cardDescription">Card Description</p>
     </div>
 
-    <!-- Share Section -->
-    <div style="margin-top: 20px;" id="shareSection">
+    <!-- Share Card -->
+    <div style="margin-top: 20px;">
         <button onclick="generateShareLink()">Share This Card</button>
         <p id="shareLinkDisplay" style="margin-top: 10px;"></p>
     </div>
 
     <!-- PayPal Payment -->
-    <div class="pay-button" id="paymentSection">
+    <div class="pay-button">
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" onsubmit="return setPayPalEmail()">
             <label for="paypalEmail">Enter Your PayPal Email:</label>
             <input type="email" id="paypalEmail" name="paypalEmail" required>
@@ -105,6 +104,7 @@
         </form>
     </div>
 
+    <!-- JavaScript -->
     <script>
         function updateCard() {
             document.getElementById("cardName").textContent = document.getElementById("name").value || "Your Name";
@@ -153,21 +153,13 @@
 
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
-            const isShared = params.has('name') || params.has('title') || params.has('email') || params.has('phone') || params.has('description');
+            if (params.has('name')) document.getElementById("name").value = decodeURIComponent(params.get('name'));
+            if (params.has('title')) document.getElementById("title").value = decodeURIComponent(params.get('title'));
+            if (params.has('email')) document.getElementById("email").value = decodeURIComponent(params.get('email'));
+            if (params.has('phone')) document.getElementById("phone").value = decodeURIComponent(params.get('phone'));
+            if (params.has('description')) document.getElementById("description").value = decodeURIComponent(params.get('description'));
 
-            if (isShared) {
-                // Hide all input and action sections for shared card view
-                document.getElementById("mainEditor").style.display = "none";
-                document.getElementById("paymentSection").style.display = "none";
-                document.getElementById("shareSection").style.display = "none";
-            }
-
-            // Fill in card from shared data if available
-            if (params.has('name')) document.getElementById("cardName").textContent = decodeURIComponent(params.get('name'));
-            if (params.has('title')) document.getElementById("cardTitle").textContent = decodeURIComponent(params.get('title'));
-            if (params.has('email')) document.getElementById("cardEmail").textContent = decodeURIComponent(params.get('email'));
-            if (params.has('phone')) document.getElementById("cardPhone").textContent = decodeURIComponent(params.get('phone'));
-            if (params.has('description')) document.getElementById("cardDescription").textContent = decodeURIComponent(params.get('description'));
+            updateCard();
 
             if (params.has('lat') && params.has('lon')) {
                 const loc = `Shared from location: ${params.get('lat')}, ${params.get('lon')}`;
